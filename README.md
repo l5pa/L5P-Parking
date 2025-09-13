@@ -9,7 +9,7 @@ A mobile-first Progressive Web App for finding parking in Atlanta's Upper Westsi
 
 ## Features
 
-🅿️ **15 Parking Locations**: Comprehensive coverage of Upper Westside Atlanta parking
+🅿️ **5 Parking Locations**: Comprehensive coverage of Upper Westside Atlanta parking
 ⚡ **EV Charging Info**: Level 2 and DC Fast Charging availability with station counts
 🚲 **Bike Parking**: Locations with secure bike storage
 📱 **Mobile-First**: Optimized touch controls and responsive design
