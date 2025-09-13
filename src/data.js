@@ -7,7 +7,7 @@ const POINTS_OF_INTEREST = [
         category: "Parking Garage",
         description: "Multi-level parking garage serving the cultural district. $2/hour, EV charging available.",
         lat: 33.76502,
-        lng: −84.33357,
+        lng: -84.33357,
         address: "1642 McLendon Ave NE, Atlanta, GA 30307",
         evCharging: true,
         chargingType: "Level 2",
