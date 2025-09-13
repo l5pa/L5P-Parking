@@ -1,0 +1,408 @@
+/* CSS Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    overflow-x: hidden;
+}
+
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+header {
+    background: #9C27B0;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.location-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.location-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Map Container */
+.map-container {
+    height: 40vh;
+    position: relative;
+    background: #e0e0e0;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+/* Mobile-specific map behavior */
+@media (max-width: 767px) {
+    .map-container {
+        touch-action: manipulation; /* Allow map interactions */
+        position: relative;
+    }
+    
+    #map {
+        touch-action: manipulation; /* Allow map panning and zooming */
+        pointer-events: auto; /* Re-enable all interactions */
+    }
+}
+
+/* Desktop map behavior */
+@media (min-width: 768px) {
+    .map-container {
+        touch-action: none; /* Full map interaction */
+    }
+    
+    #map {
+        touch-action: none; /* Full map interaction */
+    }
+}
+
+/* Loading Spinner */
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(245, 245, 245, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.loading.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #9C27B0;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* POI List */
+.poi-list {
+    background: white;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    height: 60vh; /* Fixed height for mobile */
+    min-height: 0;
+}
+
+.poi-list-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    background: white;
+}
+
+.poi-list-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.distance-info {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.poi-cards {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem;
+    min-height: 0;
+    overscroll-behavior: contain; /* Prevent bounce scroll from affecting parent */
+}
+
+.poi-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.1s;
+}
+
+.poi-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.poi-card.active {
+    border-color: #9C27B0;
+    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+}
+
+.poi-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.poi-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+    margin: 0;
+}
+
+.poi-distance {
+    font-size: 0.8rem;
+    color: #666;
+    background: #f0f0f0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.poi-category {
+    font-size: 0.85rem;
+    color: #9C27B0;
+    margin-bottom: 0.25rem;
+}
+
+.poi-amenities {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.amenity-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px; /* Full pill shape */
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid;
+}
+
+.amenity-badge.ev-charging {
+    background: #F0FDF4; /* Very light green background */
+    color: #166534; /* Dark green text */
+    border-color: #BBF7D0; /* Light green border */
+}
+
+.amenity-badge.ev-charging::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22C55E; /* Green dot */
+    flex-shrink: 0;
+}
+
+.amenity-badge.bike-parking {
+    background: #FFF7ED; /* Very light orange background */
+    color: #9A3412; /* Dark orange text */
+    border-color: #FED7AA; /* Light orange border */
+}
+
+.amenity-badge.bike-parking::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #EA580C; /* Orange dot */
+    flex-shrink: 0;
+}
+
+/* Map popup styling */
+.poi-popup h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.poi-popup .poi-category {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.popup-amenities {
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.popup-amenity {
+    font-size: 0.8rem;
+    color: #4CAF50;
+    font-weight: 500;
+}
+
+.poi-description {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+.no-location {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Mobile landscape and tablet adjustments */
+@media (min-width: 640px) and (orientation: landscape) {
+    main {
+        flex-direction: row;
+    }
+    
+    .map-container {
+        height: 100vh;
+        flex: 1.2;
+    }
+    
+    .poi-list {
+        width: 320px;
+        min-width: 300px;
+        max-width: 45vw;
+        border-top: none;
+        border-left: 1px solid #e0e0e0;
+        height: 100vh;
+    }
+}
+
+/* Desktop and larger tablets */
+@media (min-width: 768px) {
+    main {
+        flex-direction: row;
+    }
+    
+    .map-container {
+        height: 100vh;
+        flex: 1;
+    }
+    
+    .poi-list {
+        width: 380px;
+        min-width: 320px;
+        max-width: 40vw;
+        border-top: none;
+        border-left: 1px solid #e0e0e0;
+        height: 100vh;
+        flex: none; /* Override mobile flex behavior */
+    }
+    
+    .poi-card {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Large desktop screens */
+@media (min-width: 1200px) {
+    .poi-list {
+        width: 420px;
+        max-width: 35vw;
+    }
+}
+
+/* Prevent body scroll on mobile when POI list is below map */
+@media (max-width: 767px) {
+    body {
+        overflow: hidden; /* Prevent body scroll */
+        height: 100vh;
+    }
+    
+    #app {
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    main {
+        height: calc(100vh - 4rem); /* Account for header height */
+        overflow: hidden;
+    }
+}
+
+/* Touch Optimizations */
+@media (hover: none) {
+    .poi-card:hover {
+        transform: none;
+    }
+    
+    .poi-card:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Safe Area Insets for iOS */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+    
+    header {
+        padding-top: max(1rem, env(safe-area-inset-top));
+    }
+    
+    .poi-cards {
+        padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    }
+}

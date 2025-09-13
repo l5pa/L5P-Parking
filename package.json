@@ -1,0 +1,16 @@
+{
+  "name": "poi-map-app",
+  "version": "1.0.0",
+  "description": "Mobile-first PWA for location-based points of interest",
+  "main": "index.js",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'Build complete'",
+    "lint": "echo 'No linting configured'"
+  },
+  "keywords": ["pwa", "geolocation", "map", "poi"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

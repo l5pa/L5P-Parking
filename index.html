@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#9C27B0">
+    <meta name="description" content="Find nearby points of interest on an interactive map">
+    
+    <title>POI Map</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="src/styles.css">
+    
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Parking Lots</h1>
+            <button id="locationBtn" class="location-btn" aria-label="Get current location">
+                📍
+            </button>
+        </header>
+        
+        <main>
+            <div id="mapContainer" class="map-container">
+                <div id="map"></div>
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Finding your location...</p>
+                </div>
+            </div>
+            
+            <div id="poiList" class="poi-list">
+                <div class="poi-list-header">
+                    <h2>Parking Lots</h2>
+                    <span id="distanceInfo" class="distance-info"></span>
+                </div>
+                <div id="poiCards" class="poi-cards">
+                    <p class="no-location">Enable location access to see nearby points of interest</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="src/data.js"></script>
+    <script src="src/utils.js"></script>
+    <script src="src/map.js"></script>
+    <script src="src/app.js"></script>
+</body>
+</html>
