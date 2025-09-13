@@ -29,34 +29,35 @@ class POIMap {
             boxZoom: !isMobile // Only on desktop
         });
         
-        // Add tile layer (OpenStreetMap)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 18
+        // Add Google Maps-style tile layer
+        L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+            attribution: '© Google Maps'
         }).addTo(this.map);
         
         // Custom user location marker
         this.userLocationIcon = L.divIcon({
-            html: '<div class="user-location-marker">📍</div>',
+            html: '<div class="user-location-marker"></div>',
             className: 'custom-user-marker',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
+        // Custom POI marker
+        this.poiIcon = L.divIcon({
+            html: '<div class="poi-marker">P</div>',
+            className: 'custom-poi-marker',
             iconSize: [30, 30],
             iconAnchor: [15, 15]
         });
-        
-        // Custom POI marker
-        this.poiIcon = L.divIcon({
-            html: '<div class="poi-marker">📌</div>',
-            className: 'custom-poi-marker',
-            iconSize: [25, 25],
-            iconAnchor: [12, 25]
-        });
-        
+
         // Selected POI marker
         this.selectedPoiIcon = L.divIcon({
-            html: '<div class="selected-poi-marker">🎯</div>',
+            html: '<div class="selected-poi-marker">P</div>',
             className: 'custom-selected-marker',
-            iconSize: [30, 30],
-            iconAnchor: [15, 30]
+            iconSize: [35, 35],
+            iconAnchor: [17, 17]
         });
         
         // Add custom CSS for markers
@@ -70,33 +71,60 @@ class POIMap {
         const style = document.createElement('style');
         style.textContent = `
             .user-location-marker {
-                background: #2196F3;
+                background: #4285F4;
                 border: 3px solid white;
                 border-radius: 50%;
                 width: 20px;
                 height: 20px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                position: relative;
+            }
+
+            .user-location-marker::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 8px;
+                height: 8px;
+                background: white;
+                border-radius: 50%;
+            }
+
+            .poi-marker {
+                background: #4285F4;
+                border: 2px solid white;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                font-size: 12px;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                font-family: Arial, sans-serif;
             }
-            
-            .poi-marker {
-                color: #FF5722;
-                font-size: 20px;
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-                filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-            }
-            
+
             .selected-poi-marker {
-                color: #4CAF50;
-                font-size: 24px;
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+                background: #34A853;
+                border: 2px solid white;
+                border-radius: 50%;
+                width: 35px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+                color: white;
+                font-weight: bold;
+                font-size: 16px;
+                font-family: Arial, sans-serif;
                 animation: pulse 2s infinite;
             }
-            
+
             @keyframes pulse {
                 0% { transform: scale(1); }
                 50% { transform: scale(1.1); }
