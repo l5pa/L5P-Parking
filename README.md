@@ -1,18 +1,24 @@
-# POI Map App
+# Atlanta Upper Westside Parking Map
 
-A mobile-first Progressive Web App that displays nearby points of interest on an interactive map using your current location.
+A mobile-first Progressive Web App for finding parking in Atlanta's Upper Westside with EV charging information.
+
+## 🚀 Live Demo
+**[https://naoyawada.github.io/L5P-Parking/](https://naoyawada.github.io/L5P-Parking/)**
+
+*Access the live app directly in your browser - works best on mobile devices!*
 
 ## Features
 
-🗺️ **Interactive Map**: Uses Leaflet.js for smooth, responsive mapping
-📍 **Geolocation**: Automatically finds and tracks your current location  
-📏 **Distance Calculation**: Shows distance to each point of interest
-📱 **Mobile-First**: Optimized for mobile devices with touch interactions
-🎯 **Location Sorting**: Points of interest sorted by proximity
-📜 **Scrollable List**: Easy browsing of nearby locations
-🔄 **Real-time Updates**: Location and distances update as you move
-💾 **Offline Support**: PWA with service worker caching
-🎨 **Responsive Design**: Works on mobile, tablet, and desktop
+🅿️ **15 Parking Locations**: Comprehensive coverage of Upper Westside Atlanta parking
+⚡ **EV Charging Info**: Level 2 and DC Fast Charging availability with station counts
+🚲 **Bike Parking**: Locations with secure bike storage
+📱 **Mobile-First**: Optimized touch controls and responsive design
+📍 **Real-time Location**: Automatic geolocation with distance calculations  
+🎯 **Distance Sorting**: Parking sorted by proximity in miles
+💜 **Purple Theme**: Clean, modern UI with professional badge design
+🗺️ **Interactive Map**: Leaflet.js mapping with touch-optimized controls
+💾 **Offline PWA**: Install on mobile devices, works offline
+🔄 **Live Updates**: Location tracking as you move around the area
 
 ## Getting Started
 
