@@ -1,7 +1,7 @@
 {
-  "name": "POI Map App",
-  "short_name": "POI Map",
-  "description": "Find nearby points of interest on an interactive map",
+  "name": "Little 5 Points Parking Map",
+  "short_name": "L5P Parking",
+  "description": "Find parking in Little 5 Points, Atlanta",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
