@@ -18,20 +18,25 @@ class POIApp {
         }
     }
     
-    init() {
+    async init() {
         // Initialize map
         this.map = new POIMap();
-        
+
         // Bind event listeners
         this.bindEvents();
-        
-        // Load initial POI markers (without distances)
-        const pois = getAllPOIs();
+
+        // Show loading state while fetching data
+        this.showDataLoading();
+
+        // Fetch data from Google Sheet
+        const pois = await fetchSheetData();
+
+        // Load POI markers (without distances)
         this.map.addPOIMarkers(pois);
-        
+
         // Display POIs in list (without distances initially)
         this.displayPOIList(pois);
-        
+
         // Try to get user location automatically
         this.getUserLocation();
     }
@@ -145,17 +150,30 @@ class POIApp {
             this.selectPOI(poi.id);
         });
         
-        // Create amenities badges
-        let amenitiesBadges = '';
-        if (poi.evCharging) {
-            const stationText = poi.chargingStations ? `${poi.chargingStations} stations` : '';
-            const badgeText = poi.chargingType === 'DC Fast Charging' ? 'Fast Charging' : 'EV Charging';
-            amenitiesBadges += `<span class="amenity-badge ev-charging" title="EV Charging: ${poi.chargingType || 'Available'}${stationText ? ' - ' + stationText : ''}">${badgeText}</span>`;
-        }
-        if (poi.bikeParking) {
-            amenitiesBadges += `<span class="amenity-badge bike-parking" title="Bike Parking Available">Bike Parking</span>`;
-        }
-        
+        // Create amenity icons with labels
+        const evIcon = poi.evCharging
+            ? `<span class="amenity-icon available">
+                 <i class="fa-solid fa-fw fa-bolt"></i><span class="amenity-label">EV Charging</span>
+               </span>`
+            : `<span class="amenity-icon unavailable">
+                 <span class="fa-stack">
+                   <i class="fa-solid fa-bolt fa-stack-1x"></i>
+                   <i class="fa-solid fa-ban fa-stack-2x"></i>
+                 </span><span class="amenity-label">No EV Charging</span>
+               </span>`;
+
+        const hasValidation = poi.validation && poi.validation.toLowerCase() !== 'no';
+        const validateIcon = hasValidation
+            ? `<span class="amenity-icon available">
+                 <i class="fa-solid fa-fw fa-ticket"></i><span class="amenity-label">Validation</span>
+               </span>`
+            : `<span class="amenity-icon unavailable">
+                 <span class="fa-stack">
+                   <i class="fa-solid fa-ticket fa-stack-1x"></i>
+                   <i class="fa-solid fa-ban fa-stack-2x"></i>
+                 </span><span class="amenity-label">No Validation</span>
+               </span>`;
+
         // Create card content
         card.innerHTML = `
             <div class="poi-card-header">
@@ -163,8 +181,13 @@ class POIApp {
                 ${poi.formattedDistance ? `<span class="poi-distance">${poi.formattedDistance}</span>` : ''}
             </div>
             <p class="poi-category">${poi.category}</p>
-            <p class="poi-description">${poi.description}</p>
-            ${amenitiesBadges ? `<div class="poi-amenities">${amenitiesBadges}</div>` : ''}
+            ${poi.address ? `<p class="poi-address"><i class="fa-solid fa-fw fa-map-pin"></i>${poi.address}</p>` : ''}
+            ${poi.landmark ? `<p class="poi-landmark"><i class="fa-solid fa-fw fa-location-dot"></i>${poi.landmark}</p>` : ''}
+            ${poi.rates ? `<p class="poi-rates"><i class="fa-solid fa-fw fa-dollar-sign"></i>${poi.rates}</p>` : ''}
+            <div class="poi-amenity-icons">${evIcon}${validateIcon}</div>
+            <a class="directions-btn" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(poi.address || poi.lat + ',' + poi.lng)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-fw fa-diamond-turn-right"></i>Directions
+            </a>
         `;
         
         return card;
@@ -253,6 +276,13 @@ class POIApp {
         }
     }
     
+    showDataLoading() {
+        const poiCards = document.getElementById('poiCards');
+        if (poiCards) {
+            poiCards.innerHTML = '<p class="no-location">Loading parking data...</p>';
+        }
+    }
+
     handleLocationError(error) {
         const poiCards = document.getElementById('poiCards');
         if (!poiCards) return;

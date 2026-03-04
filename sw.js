@@ -1,5 +1,5 @@
 // Service Worker for PWA functionality
-const CACHE_NAME = 'poi-map-v1.0.0';
+const CACHE_NAME = 'poi-map-v2.0.0';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -10,7 +10,8 @@ const urlsToCache = [
     '/src/data.js',
     '/manifest.json',
     'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
 ];
 
 // Install event - cache resources
@@ -27,14 +28,31 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Fetch event - serve from cache when offline
+// Fetch event - network-first for Google Sheets, cache-first for static assets
 self.addEventListener('fetch', (event) => {
-    // Skip cross-origin requests
-    if (!event.request.url.startsWith(self.location.origin) && 
-        !event.request.url.startsWith('https://unpkg.com/leaflet')) {
+    // Google Sheets requests: always try network first
+    if (event.request.url.includes('docs.google.com/spreadsheets')) {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseToCache);
+                    });
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
+        );
         return;
     }
-    
+
+    // Skip other cross-origin requests
+    if (!event.request.url.startsWith(self.location.origin) &&
+        !event.request.url.startsWith('https://unpkg.com/leaflet') &&
+        !event.request.url.startsWith('https://cdnjs.cloudflare.com/ajax/libs/font-awesome')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
@@ -42,21 +60,21 @@ self.addEventListener('fetch', (event) => {
                 if (response) {
                     return response;
                 }
-                
+
                 return fetch(event.request).then((response) => {
                     // Check if we received a valid response
                     if (!response || response.status !== 200 || response.type !== 'basic') {
                         return response;
                     }
-                    
+
                     // Clone the response since it can only be consumed once
                     const responseToCache = response.clone();
-                    
+
                     caches.open(CACHE_NAME)
                         .then((cache) => {
                             cache.put(event.request, responseToCache);
                         });
-                    
+
                     return response;
                 });
             })

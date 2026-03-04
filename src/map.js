@@ -15,7 +15,7 @@ class POIMap {
         const isMobile = window.innerWidth < 768;
         
         this.map = L.map('map', {
-            center: [33.7861, -84.4096], // Upper Westside Atlanta
+            center: [33.7648, -84.3490], // Little Five Points Atlanta
             zoom: 14,
             zoomControl: true,
             attributionControl: true,
@@ -29,11 +29,10 @@ class POIMap {
             boxZoom: !isMobile // Only on desktop
         });
         
-        // Add Google Maps-style tile layer
-        L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        // Stadia Outdoors tile layer
+        L.tileLayer('https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png', {
             maxZoom: 20,
-            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-            attribution: '© Google Maps'
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.map);
         
         // Custom user location marker
@@ -62,7 +61,12 @@ class POIMap {
         
         // Add custom CSS for markers
         this.addMarkerStyles();
-        
+
+        // Click on map background to deselect
+        this.map.on('click', () => {
+            this.deselectAll();
+        });
+
         // Fix mobile touch scrolling issues
         this.fixMobileTouchHandling();
     }
@@ -93,7 +97,7 @@ class POIMap {
             }
 
             .poi-marker {
-                background: #4285F4;
+                background: #333;
                 border: 2px solid white;
                 border-radius: 50%;
                 width: 30px;
@@ -102,15 +106,15 @@ class POIMap {
                 align-items: center;
                 justify-content: center;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                color: white;
+                color: #FFD200;
                 font-weight: bold;
                 font-size: 14px;
                 font-family: Arial, sans-serif;
             }
 
             .selected-poi-marker {
-                background: #34A853;
-                border: 2px solid white;
+                background: #FFD200;
+                border: 2px solid #333;
                 border-radius: 50%;
                 width: 35px;
                 height: 35px;
@@ -118,7 +122,7 @@ class POIMap {
                 align-items: center;
                 justify-content: center;
                 box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-                color: white;
+                color: #333;
                 font-weight: bold;
                 font-size: 16px;
                 font-family: Arial, sans-serif;
@@ -191,43 +195,16 @@ class POIMap {
                 icon: this.poiIcon
             }).addTo(this.map);
             
-            // Create amenities for popup
-            let amenitiesHtml = '';
-            if (poi.evCharging || poi.bikeParking) {
-                amenitiesHtml = '<div class="popup-amenities">';
-                if (poi.evCharging) {
-                    const stationInfo = poi.chargingStations ? ` (${poi.chargingStations} stations)` : '';
-                    amenitiesHtml += `<span class="popup-amenity">⚡ ${poi.chargingType || 'EV Charging'}${stationInfo}</span>`;
-                }
-                if (poi.bikeParking) {
-                    amenitiesHtml += `<span class="popup-amenity">🚲 Bike Parking</span>`;
-                }
-                amenitiesHtml += '</div>';
-            }
-            
-            // Create popup content
-            const popupContent = `
-                <div class="poi-popup">
-                    <h3>${poi.name}</h3>
-                    <p class="poi-category">${poi.category}</p>
-                    ${amenitiesHtml}
-                    <p class="poi-description">${poi.description}</p>
-                    ${poi.formattedDistance ? `<p class="poi-distance">📍 ${poi.formattedDistance} away</p>` : ''}
-                </div>
-            `;
-            
-            marker.bindPopup(popupContent);
-            
             // Store reference to marker with POI data
             marker.poiData = poi;
             this.poiMarkers.push(marker);
-            
+
             // Add click event to highlight corresponding list item
             marker.on('click', () => {
                 this.selectPOI(poi.id);
                 // Trigger custom event for list synchronization
-                window.dispatchEvent(new CustomEvent('poiMapClick', { 
-                    detail: { poiId: poi.id } 
+                window.dispatchEvent(new CustomEvent('poiMapClick', {
+                    detail: { poiId: poi.id }
                 }));
             });
         });
@@ -256,12 +233,9 @@ class POIMap {
         if (selectedMarker) {
             selectedMarker.setIcon(this.selectedPoiIcon);
             this.selectedPOI = poiId;
-            
-            // Center map on selected POI
-            this.map.setView([selectedMarker.poiData.lat, selectedMarker.poiData.lng], 15);
-            
-            // Open popup
-            selectedMarker.openPopup();
+
+            // Center map on selected marker
+            this.map.setView([selectedMarker.poiData.lat, selectedMarker.poiData.lng], 17, { animate: true });
         }
     }
     
@@ -290,6 +264,17 @@ class POIMap {
         });
     }
     
+    // Deselect all markers and cards
+    deselectAll() {
+        this.poiMarkers.forEach(marker => {
+            marker.setIcon(this.poiIcon);
+        });
+        this.selectedPOI = null;
+        document.querySelectorAll('.poi-card').forEach(card => {
+            card.classList.remove('active');
+        });
+    }
+
     // Get current map center
     getCenter() {
         const center = this.map.getCenter();

@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#9C27B0">
+    <meta name="theme-color" content="#FFD200">
     <meta name="description" content="Find nearby points of interest on an interactive map">
     
     <title>POI Map</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="src/styles.css">
     
     <link rel="apple-touch-icon" href="assets/icon-192.png">
@@ -35,10 +36,6 @@
             </div>
             
             <div id="poiList" class="poi-list">
-                <div class="poi-list-header">
-                    <h2>Parking Lots</h2>
-                    <span id="distanceInfo" class="distance-info"></span>
-                </div>
                 <div id="poiCards" class="poi-cards">
                     <p class="no-location">Enable location access to see nearby points of interest</p>
                 </div>

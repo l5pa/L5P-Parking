@@ -1,73 +1,145 @@
-// Upper Westside Atlanta Parking & Points of Interest
-// Based on the Upper Westside CID parking map area
-const POINTS_OF_INTEREST = [
-    {
-        id: 1,
-        name: "Candler Park Market",
-        category: "Parking Garage",
-        description: "Multi-level parking garage serving the cultural district. $2/hour, EV charging available.",
-        lat: 33.76502,
-        lng: -84.33357,
-        address: "1642 McLendon Ave NE, Atlanta, GA 30307",
-        evCharging: true,
-        chargingType: "Level 2",
-        chargingStations: 4
-    },
-    {
-        id: 2,
-        name: "Moxie Burger",
-        category: "Surface Parking",
-        description: "Free parking for customers, metered street parking available. Bike parking included.",
-        lat: 33.76256,
-        lng: -84.33334,
-        address: "1660 DeKalb Ave NE Unit 150, Atlanta, GA 30307",
-        evCharging: false,
-        bikeParking: true
-    },
-    {
-        id: 3,
-        name: "Sean's Candler Park",
-        category: "Surface Parking",
-        description: "Shared retail parking, free for first 2 hours with validation. EV charging stations.",
-        lat: 33.76502,
-        lng: -84.34186,
-        address: "1394 McLendon Ave NE, Atlanta, GA 30307",
-        evCharging: true,
-        chargingType: "Level 2",
-        chargingStations: 2
-    },
-    {
-        id: 4,
-        name: "The Brewhouse Cafe",
-        category: "Trail Parking",
-        description: "Free parking for Beltline access. Popular with cyclists and joggers. Limited spaces.",
-        lat: 33.7652168,
-        lng: -84.3488377,
-        address: "401 Moreland Ave NE, Atlanta, GA 30307",
-        evCharging: false,
-        bikeParking: true
-    },
-    {
-        id: 5,
-        name: "The Porter Beer Bar",
-        category: "Parking Garage",
-        description: "Covered parking for shopping and dining. $1/hour, free after 6PM weekdays.",
-        lat: 33.76517,
-        lng: -84.34968,
-        address: "1156 Euclid Ave NE, Atlanta, GA 30307",
-        evCharging: true,
-        chargingType: "Level 2",
-        chargingStations: 6,
-        bikeParking: true
-    }
-];
+// Google Sheets data source for parking locations
+const SHEET_ID = '1OuKDgbthkc03pr87yIu21M5RCLMaIuEsGDGbkqoq8cc';
+const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
 
-// Function to get all POI data
+let POINTS_OF_INTEREST = [];
+let dataLoaded = false;
+
+// Parse CSV text into array of objects
+function parseCSV(csvText) {
+    const lines = csvText.split('\n');
+    if (lines.length < 2) return [];
+
+    // Parse header row
+    const headers = parseCSVRow(lines[0]).map(h => h.trim().toLowerCase());
+
+    const results = [];
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        const values = parseCSVRow(line);
+        const row = {};
+        headers.forEach((header, index) => {
+            row[header] = (values[index] || '').trim();
+        });
+        results.push(row);
+    }
+    return results;
+}
+
+// Parse a single CSV row, handling quoted fields with commas
+function parseCSVRow(row) {
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+        const char = row[i];
+        if (char === '"') {
+            if (inQuotes && row[i + 1] === '"') {
+                current += '"';
+                i++; // skip escaped quote
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            values.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    values.push(current);
+    return values;
+}
+
+// Convert a sheet row into a POI object
+function rowToPOI(row) {
+    // Skip rows without GPS coordinates
+    const gps = row.gps || '';
+    if (!gps.includes(',')) return null;
+
+    const [latStr, lngStr] = gps.split(',');
+    const lat = parseFloat(latStr);
+    const lng = parseFloat(lngStr);
+    if (isNaN(lat) || isNaN(lng)) return null;
+
+    const id = parseInt(row.id) || 0;
+    const name = row.name || row.description || 'Unknown';
+    const description = row.description || '';
+    const address = row.address || '';
+    const evCharging = (row.evcharging || '').toLowerCase() === 'yes';
+    const rates = row.rates || '';
+    const type = row.type || 'Parking';
+    const landmark = row.landmark || '';
+    const validation = row.validation || '';
+    const contact = row.contact || '';
+
+    return {
+        id,
+        name,
+        category: type,
+        description,
+        rates,
+        lat,
+        lng,
+        address,
+        evCharging,
+        validation,
+        landmark,
+        contact
+    };
+}
+
+// Build a user-friendly description from multiple fields
+function buildDescription(description, rates, validation) {
+    const parts = [];
+    if (rates) parts.push(rates);
+    if (validation && validation.toLowerCase() !== 'no') parts.push(`Validation: ${validation}`);
+    if (description && description !== parts[0]) {
+        // Only add description if it adds new info
+        const descLower = description.toLowerCase();
+        const alreadyCovered = parts.some(p => p.toLowerCase().includes(descLower));
+        if (!alreadyCovered) parts.unshift(description);
+    }
+    return parts.join('. ') || 'Parking available.';
+}
+
+// Fetch data from Google Sheets
+async function fetchSheetData() {
+    try {
+        const response = await fetch(SHEET_CSV_URL);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const csvText = await response.text();
+        const rows = parseCSV(csvText);
+
+        POINTS_OF_INTEREST = rows
+            .map(rowToPOI)
+            .filter(poi => poi !== null);
+
+        dataLoaded = true;
+        console.log(`Loaded ${POINTS_OF_INTEREST.length} locations from Google Sheet`);
+        return POINTS_OF_INTEREST;
+    } catch (error) {
+        console.error('Failed to fetch sheet data:', error);
+        // Return whatever we have (could be empty on first load)
+        return POINTS_OF_INTEREST;
+    }
+}
+
+// Get all POI data
 function getAllPOIs() {
     return POINTS_OF_INTEREST;
 }
 
-// Function to get POI by ID
+// Get POI by ID
 function getPOIById(id) {
     return POINTS_OF_INTEREST.find(poi => poi.id === id);
+}
+
+// Check if data has been loaded
+function isDataLoaded() {
+    return dataLoaded;
 }

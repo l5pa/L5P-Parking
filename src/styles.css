@@ -20,8 +20,8 @@ body {
 
 /* Header */
 header {
-    background: #9C27B0;
-    color: white;
+    background: #FFD200;
+    color: #333;
     padding: 1rem;
     display: flex;
     justify-content: space-between;
@@ -121,7 +121,7 @@ main {
     width: 40px;
     height: 40px;
     border: 4px solid #e0e0e0;
-    border-top: 4px solid #9C27B0;
+    border-top: 4px solid #F15E23;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
@@ -188,8 +188,9 @@ main {
 }
 
 .poi-card.active {
-    border-color: #9C27B0;
-    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+    background: #FFF8E1;
+    border-color: #FFD200;
+    box-shadow: 0 0 0 2px rgba(255, 210, 0, 0.3);
 }
 
 .poi-card-header {
@@ -208,16 +209,17 @@ main {
 
 .poi-distance {
     font-size: 0.8rem;
-    color: #666;
-    background: #f0f0f0;
+    color: #FFD200;
+    background: #333;
     padding: 0.25rem 0.5rem;
     border-radius: 12px;
     white-space: nowrap;
+    font-weight: 600;
 }
 
 .poi-category {
     font-size: 0.85rem;
-    color: #9C27B0;
+    color: #F15E23;
     margin-bottom: 0.25rem;
 }
 
@@ -255,9 +257,9 @@ main {
 }
 
 .amenity-badge.bike-parking {
-    background: #FFF7ED; /* Very light orange background */
-    color: #9A3412; /* Dark orange text */
-    border-color: #FED7AA; /* Light orange border */
+    background: #FFF7ED;
+    color: #9A3412;
+    border-color: #FED7AA;
 }
 
 .amenity-badge.bike-parking::before {
@@ -265,39 +267,167 @@ main {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #EA580C; /* Orange dot */
+    background: #EA580C;
     flex-shrink: 0;
+}
+
+.amenity-badge.landmark {
+    background: #EFF6FF;
+    color: #1E40AF;
+    border-color: #BFDBFE;
+}
+
+.amenity-badge.landmark::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3B82F6;
+    flex-shrink: 0;
+}
+
+/* Directions Button */
+.directions-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: #FFD200;
+    color: #333;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.directions-btn:hover {
+    background: #E6BD00;
+}
+
+/* Amenity Icons */
+.poi-amenity-icons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    align-items: center;
+}
+
+.amenity-icon {
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.amenity-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.amenity-icon.available .amenity-label {
+    color: #166534;
+}
+
+.amenity-icon.unavailable .amenity-label {
+    color: #9CA3AF;
+}
+
+.amenity-icon.available {
+    color: #22C55E;
+}
+
+.amenity-icon.unavailable {
+    color: #D1D5DB;
+}
+
+.amenity-icon .fa-stack {
+    font-size: 0.55rem;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+}
+
+.amenity-icon.unavailable .fa-stack-1x {
+    color: #D1D5DB;
+}
+
+.amenity-icon.unavailable .fa-ban {
+    color: #EF4444;
+    opacity: 0.7;
+}
+
+/* Popup amenity icons */
+.poi-popup .poi-amenity-icons {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Map popup styling */
 .poi-popup h3 {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.25rem 0;
     font-size: 1rem;
     color: #333;
 }
 
-.poi-popup .poi-category {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
+.poi-popup p {
+    margin: 0.1rem 0;
 }
 
-.popup-amenities {
-    margin-bottom: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.popup-amenity {
-    font-size: 0.8rem;
-    color: #4CAF50;
-    font-weight: 500;
+.poi-popup .poi-amenity-icons {
+    margin-top: 0.35rem;
 }
 
 .poi-description {
     font-size: 0.9rem;
     color: #666;
     line-height: 1.4;
+}
+
+.poi-address {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.poi-address .fa-map-pin {
+    color: #F15E23;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.poi-landmark {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.poi-landmark .fa-location-dot {
+    color: #F15E23;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.poi-rates {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.poi-rates .fa-dollar-sign {
+    color: #F15E23;
+    font-size: 0.8rem;
+    flex-shrink: 0;
 }
 
 .no-location {
