@@ -432,6 +432,21 @@ main {
     flex-shrink: 0;
 }
 
+.poi-spaces {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.poi-spaces .fa-car {
+    color: #F15E23;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
 .no-location {
     text-align: center;
     padding: 2rem;

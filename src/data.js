@@ -75,6 +75,7 @@ function rowToPOI(row) {
     const landmark = row.landmark || '';
     const validation = row.validation || '';
     const contact = row.contact || '';
+    const spaces = parseInt(row.spaces) || null;
 
     return {
         id,
@@ -88,7 +89,8 @@ function rowToPOI(row) {
         evCharging,
         validation,
         landmark,
-        contact
+        contact,
+        spaces
     };
 }
 
