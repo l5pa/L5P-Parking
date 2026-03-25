@@ -5,25 +5,47 @@ const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
 let POINTS_OF_INTEREST = [];
 let dataLoaded = false;
 
+// Split CSV text into logical rows, handling quoted fields with newlines
+function splitCSVRows(csvText) {
+    const rows = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < csvText.length; i++) {
+        const char = csvText[i];
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        }
+        if (char === '\n' && !inQuotes) {
+            rows.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    if (current.trim()) rows.push(current);
+    return rows;
+}
+
 // Parse CSV text into array of objects
 function parseCSV(csvText) {
-    const lines = csvText.split('\n');
-    if (lines.length < 2) return [];
+    const rows = splitCSVRows(csvText);
+    if (rows.length < 2) return [];
 
     // Parse header row
-    const headers = parseCSVRow(lines[0]).map(h => h.trim().toLowerCase());
+    const headers = parseCSVRow(rows[0]).map(h => h.trim().toLowerCase());
 
     const results = [];
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i].trim();
+        if (!row) continue;
 
-        const values = parseCSVRow(line);
-        const row = {};
+        const values = parseCSVRow(row);
+        const obj = {};
         headers.forEach((header, index) => {
-            row[header] = (values[index] || '').trim();
+            obj[header] = (values[index] || '').trim();
         });
-        results.push(row);
+        results.push(obj);
     }
     return results;
 }
