@@ -190,12 +190,12 @@ class POIMap {
     addPOIMarkers(pois) {
         // Clear existing POI markers
         this.clearPOIMarkers();
-        
+
         pois.forEach(poi => {
             const marker = L.marker([poi.lat, poi.lng], {
                 icon: this.poiIcon
             }).addTo(this.map);
-            
+
             // Store reference to marker with POI data
             marker.poiData = poi;
             this.poiMarkers.push(marker);
@@ -208,6 +208,23 @@ class POIMap {
                     detail: { poiId: poi.id }
                 }));
             });
+        });
+
+        // Fit map to show all markers
+        this.fitToAllMarkers();
+    }
+
+    // Fit map view to show all POI markers
+    fitToAllMarkers() {
+        if (this.poiMarkers.length === 0) return;
+
+        const bounds = L.latLngBounds(
+            this.poiMarkers.map(marker => marker.getLatLng())
+        );
+
+        this.map.fitBounds(bounds, {
+            padding: [30, 30],
+            maxZoom: 17
         });
     }
     
