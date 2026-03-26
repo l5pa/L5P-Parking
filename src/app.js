@@ -75,7 +75,7 @@ class POIApp {
             });
             
             this.userLocation = location;
-            
+
             // Update map with user location
             this.map.updateUserLocation(location.lat, location.lng);
             
@@ -90,7 +90,6 @@ class POIApp {
             
         } catch (error) {
             console.error('Location error:', error);
-            this.handleLocationError(error);
         } finally {
             hideLoading();
         }
@@ -127,10 +126,6 @@ class POIApp {
         if (!pois || pois.length === 0) {
             poiCards.innerHTML = '<p class="no-location">No points of interest found.</p>';
             return;
-        }
-        
-        if (!this.userLocation) {
-            poiCards.innerHTML = '<p class="no-location">Enable location access to see distances and get personalized recommendations.</p>';
         }
         
         // Create POI cards
@@ -284,30 +279,7 @@ class POIApp {
         }
     }
 
-    handleLocationError(error) {
-        const poiCards = document.getElementById('poiCards');
-        if (!poiCards) return;
-        
-        let errorMessage;
-        if (error.message.includes('denied')) {
-            errorMessage = `
-                <div style="text-align: center; padding: 2rem;">
-                    <p style="margin-bottom: 1rem;">📍 Location access is required to show nearby points of interest.</p>
-                    <p style="font-size: 0.9rem; color: #666;">Please enable location permissions in your browser settings and refresh the page.</p>
-                </div>
-            `;
-        } else {
-            errorMessage = `
-                <div style="text-align: center; padding: 2rem;">
-                    <p style="margin-bottom: 1rem;">❌ Unable to get your location.</p>
-                    <p style="font-size: 0.9rem; color: #666;">${error.message}</p>
-                    <button onclick="window.app.getUserLocation(true)" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">Try Again</button>
-                </div>
-            `;
-        }
-        
-        poiCards.innerHTML = errorMessage;
-    }
+
 }
 
 // Initialize app when page loads
