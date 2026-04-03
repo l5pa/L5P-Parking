@@ -1,5 +1,5 @@
 // Google Sheets data source for parking locations
-const SHEET_ID = '1OuKDgbthkc03pr87yIu21M5RCLMaIuEsGDGbkqoq8cc';
+const SHEET_ID = '1mgFIVxn9EchB3yvChwuVWXYJXHJiI9N7OWXScpRSsVc';
 const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
 
 let POINTS_OF_INTEREST = [];
