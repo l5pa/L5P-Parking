@@ -1,5 +1,5 @@
 // Service Worker for PWA functionality
-const CACHE_NAME = 'poi-map-v2.0.0';
+const CACHE_NAME = 'poi-map-v2.1.0';
 const urlsToCache = [
     '/',
     '/index.html',

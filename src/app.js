@@ -37,6 +37,9 @@ class POIApp {
         // Display POIs in list (without distances initially)
         this.displayPOIList(pois);
 
+        // Track page load with lot count
+        gtag('event', 'page_load', { lot_count: pois.length });
+
         // Try to get user location automatically
         this.getUserLocation();
     }
@@ -50,6 +53,8 @@ class POIApp {
         
         // Listen for map POI clicks
         window.addEventListener('poiMapClick', (event) => {
+            const poi = getPOIById(event.detail.poiId);
+            gtag('event', 'select_lot', { lot_id: event.detail.poiId, lot_name: poi?.name, source: 'marker' });
             this.selectPOIInList(event.detail.poiId);
         });
         
@@ -75,6 +80,7 @@ class POIApp {
             });
             
             this.userLocation = location;
+            gtag('event', 'location_granted');
 
             // Update map with user location
             this.map.updateUserLocation(location.lat, location.lng);
@@ -90,6 +96,8 @@ class POIApp {
             
         } catch (error) {
             console.error('Location error:', error);
+            const eventName = error.code === 1 ? 'location_denied' : 'location_error';
+            gtag('event', eventName, { error_code: error.code, error_message: error.message });
         } finally {
             hideLoading();
         }
@@ -142,7 +150,7 @@ class POIApp {
         
         // Add click handler
         card.addEventListener('click', () => {
-            this.selectPOI(poi.id);
+            this.selectPOI(poi.id, index);
         });
         
         // Create amenity icons with labels
@@ -185,14 +193,21 @@ class POIApp {
                 <i class="fa-solid fa-fw fa-diamond-turn-right"></i>Directions
             </a>
         `;
-        
+
+        card.querySelector('.directions-btn')?.addEventListener('click', () => {
+            gtag('event', 'get_directions', { lot_id: poi.id, lot_name: poi.name });
+        });
+
         return card;
     }
     
-    selectPOI(poiId) {
+    selectPOI(poiId, cardIndex) {
+        const poi = getPOIById(poiId);
+        gtag('event', 'select_lot', { lot_id: poiId, lot_name: poi?.name, source: 'card', card_position: cardIndex });
+
         // Update visual selection in list
         this.selectPOIInList(poiId);
-        
+
         // Update map selection
         this.map.selectPOI(poiId);
     }
