@@ -65,14 +65,14 @@ This is a static site — no build step. To run locally:
 
 The app supports two map engines:
 
-- **Leaflet** (default) — uses CartoDB Voyager tiles, no API key needed.
-- **Google Maps** — append `?engine=google` to the URL. Requires an API key and Map ID.
+- **Google Maps** (default) — requires an API key and Map ID (injected at deploy time).
+- **Leaflet** — append `?engine=leaflet` to the URL. Uses CartoDB Voyager tiles, no API key needed. Kept as a rollback option.
 
-To use Google Maps locally:
+To run the Google Maps engine locally:
 
 1. Copy the example config: `cp config.example.js config.local.js`
 2. Edit `config.local.js` and paste your `GOOGLE_MAPS_API_KEY` and `GOOGLE_MAPS_ID`
-3. Open `http://localhost:8000?engine=google`
+3. Open `http://localhost:8000`
 
 `config.local.js` and the deploy-generated `config.js` are gitignored.
 
