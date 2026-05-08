@@ -55,12 +55,71 @@ class POIMap {
 
     // ---- Stub methods (filled in by subsequent tasks) ----
     async updateUserLocation(_lat, _lng) {}
-    async addPOIMarkers(_pois) {}
     async fitToAllMarkers() {}
-    async clearPOIMarkers() {}
-    async selectPOI(_poiId) {}
     async fitBounds(_userLat, _userLng, _pois, _maxDistanceMiles = 3) {}
-    async deselectAll() {}
+
+    _makeMarkerContent(selected) {
+        const div = document.createElement('div');
+        div.className = selected ? 'selected-poi-marker' : 'poi-marker';
+        div.textContent = 'P';
+        return div;
+    }
+
+    async addPOIMarkers(pois) {
+        await this._whenReady();
+        await this.clearPOIMarkers();
+
+        pois.forEach(poi => {
+            const marker = new this._AdvancedMarkerElement({
+                map: this.map,
+                position: { lat: poi.lat, lng: poi.lng },
+                content: this._makeMarkerContent(false),
+                gmpClickable: true
+            });
+
+            marker.addListener('gmp-click', () => {
+                this.selectPOI(poi.id);
+                window.dispatchEvent(new CustomEvent('poiMapClick', {
+                    detail: { poiId: poi.id }
+                }));
+            });
+
+            this.poiMarkers.push({ marker, poi });
+        });
+
+        await this.fitToAllMarkers();
+    }
+
+    async clearPOIMarkers() {
+        this.poiMarkers.forEach(({ marker }) => { marker.map = null; });
+        this.poiMarkers = [];
+    }
+
+    async selectPOI(poiId) {
+        await this._whenReady();
+        // Reset all markers to default content
+        this.poiMarkers.forEach(({ marker }) => {
+            marker.content = this._makeMarkerContent(false);
+        });
+        const found = this.poiMarkers.find(({ poi }) => poi.id === poiId);
+        if (found) {
+            found.marker.content = this._makeMarkerContent(true);
+            this.selectedPOI = poiId;
+            this.map.panTo({ lat: found.poi.lat, lng: found.poi.lng });
+            // Match Leaflet behavior: zoom in on selection
+            if (this.map.getZoom() < 17) this.map.setZoom(17);
+        }
+    }
+
+    async deselectAll() {
+        this.poiMarkers.forEach(({ marker }) => {
+            marker.content = this._makeMarkerContent(false);
+        });
+        this.selectedPOI = null;
+        document.querySelectorAll('.poi-card').forEach(card => {
+            card.classList.remove('active');
+        });
+    }
     getCenter() {
         if (!this.map) return { lat: 0, lng: 0 };
         const c = this.map.getCenter();
