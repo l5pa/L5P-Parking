@@ -48,3 +48,7 @@ pids
 # Temporary folders
 tmp/
 temp/
+
+# Generated/local config — never commit real keys
+config.js
+config.local.js
