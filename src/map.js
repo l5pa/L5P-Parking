@@ -60,9 +60,6 @@ class POIMap {
             iconAnchor: [17, 17]
         });
         
-        // Add custom CSS for markers
-        this.addMarkerStyles();
-
         // Click on map background to deselect
         this.map.on('click', () => {
             this.deselectAll();
@@ -70,73 +67,6 @@ class POIMap {
 
         // Fix mobile touch scrolling issues
         this.fixMobileTouchHandling();
-    }
-    
-    addMarkerStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .user-location-marker {
-                background: #4285F4;
-                border: 3px solid white;
-                border-radius: 50%;
-                width: 20px;
-                height: 20px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                position: relative;
-            }
-
-            .user-location-marker::after {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 8px;
-                height: 8px;
-                background: white;
-                border-radius: 50%;
-            }
-
-            .poi-marker {
-                background: #333;
-                border: 2px solid white;
-                border-radius: 50%;
-                width: 30px;
-                height: 30px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                color: #FFD200;
-                font-weight: bold;
-                font-size: 14px;
-                font-family: Arial, sans-serif;
-            }
-
-            .selected-poi-marker {
-                background: #FFD200;
-                border: 2px solid #333;
-                border-radius: 50%;
-                width: 35px;
-                height: 35px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-                color: #333;
-                font-weight: bold;
-                font-size: 16px;
-                font-family: Arial, sans-serif;
-                animation: pulse 2s infinite;
-            }
-
-            @keyframes pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.1); }
-                100% { transform: scale(1); }
-            }
-        `;
-        document.head.appendChild(style);
     }
     
     fixMobileTouchHandling() {
@@ -313,3 +243,5 @@ class POIMap {
         };
     }
 }
+
+window.POIMap = POIMap;

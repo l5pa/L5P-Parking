@@ -10,11 +10,18 @@ class POIApp {
     }
     
     initializeApp() {
-        // Wait for DOM to be fully loaded
+        const start = () => {
+            // Engine loader fires mapEngineReady after vendor + map module load
+            if (window.POIMap) {
+                this.init();
+            } else {
+                window.addEventListener('mapEngineReady', () => this.init(), { once: true });
+            }
+        };
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.init());
+            document.addEventListener('DOMContentLoaded', start);
         } else {
-            this.init();
+            start();
         }
     }
     
