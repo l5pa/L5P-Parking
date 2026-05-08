@@ -1,5 +1,5 @@
 // Service Worker for PWA functionality
-const CACHE_NAME = 'poi-map-v2.1.0';
+const CACHE_NAME = 'poi-map-v2.2.0';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -43,6 +43,12 @@ self.addEventListener('fetch', (event) => {
                 })
                 .catch(() => caches.match(event.request))
         );
+        return;
+    }
+
+    // Never cache or proxy Google Maps requests (Google ToS prohibits caching tiles)
+    if (event.request.url.includes('maps.googleapis.com') ||
+        event.request.url.includes('maps.gstatic.com')) {
         return;
     }
 
