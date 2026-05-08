@@ -7,7 +7,6 @@ class POIMap {
         this.poiMarkers = []; // each: { marker: AdvancedMarkerElement, poi: {...} }
         this.userLocation = null;
         this.selectedPOI = null;
-        this._libsReady = null; // Promise resolved with imported libraries
         this._readyResolvers = [];
 
         this.initMap();
@@ -41,7 +40,6 @@ class POIMap {
         // Click on empty map → deselect
         this.map.addListener('click', () => this.deselectAll());
 
-        this._libsReady = Promise.resolve();
         // Resolve any operations queued before init finished
         this._readyResolvers.forEach(fn => fn());
         this._readyResolvers = [];
@@ -159,8 +157,8 @@ class POIMap {
             found.marker.content = this._makeMarkerContent(true);
             this.selectedPOI = poiId;
             this.map.panTo({ lat: found.poi.lat, lng: found.poi.lng });
-            // Match Leaflet behavior: zoom in on selection
-            if (this.map.getZoom() < 17) this.map.setZoom(17);
+            // Match Leaflet behavior: setView always snaps zoom to 17
+            this.map.setZoom(17);
         }
     }
 
