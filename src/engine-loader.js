@@ -1,4 +1,4 @@
-// Map engine loader — picks Leaflet (default) or Google Maps based on
+// Map engine loader — picks Google Maps (default) or Leaflet based on
 // the ?engine= URL param, then injects the right vendor assets and
 // engine module. Fires `mapEngineReady` when done so app.js can
 // instantiate POIMap.
@@ -6,7 +6,7 @@
     'use strict';
 
     const URL_PARAM = 'engine';
-    const DEFAULT_ENGINE = 'leaflet';
+    const DEFAULT_ENGINE = 'google';
 
     function readEngine() {
         const params = new URLSearchParams(window.location.search);
