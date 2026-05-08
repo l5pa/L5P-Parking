@@ -58,7 +58,7 @@ class POIMap {
     }
 
     async updateUserLocation(lat, lng) {
-        await this._whenReady();
+        if (!this.map) await this._whenReady();
         this.userLocation = { lat, lng };
 
         if (this.userMarker) {
@@ -76,7 +76,13 @@ class POIMap {
     }
 
     async fitToAllMarkers() {
-        await this._whenReady();
+        if (!this.map) await this._whenReady();
+        this._fitToAllMarkersSync();
+    }
+
+    // Sync helper — caller must ensure this.map is ready.
+    // Used by addPOIMarkers to avoid awaits that re-order microtasks.
+    _fitToAllMarkersSync() {
         if (this.poiMarkers.length === 0) return;
 
         const bounds = new google.maps.LatLngBounds();
@@ -92,7 +98,7 @@ class POIMap {
     }
 
     async fitBounds(userLat, userLng, pois, maxDistanceMiles = 3) {
-        await this._whenReady();
+        if (!this.map) await this._whenReady();
         if (!pois || pois.length === 0) return;
 
         // poi.distance is in km; milesToKm is provided by utils.js (loaded earlier)
@@ -117,8 +123,11 @@ class POIMap {
     }
 
     async addPOIMarkers(pois) {
-        await this._whenReady();
-        await this.clearPOIMarkers();
+        if (!this.map) await this._whenReady();
+        // The rest of this body runs synchronously when called after map init,
+        // so app.js's subsequent fitBounds(user, pois) call reliably wins over
+        // the fitToAllMarkers below — matching Leaflet's sync execution order.
+        this._clearPOIMarkersSync();
 
         pois.forEach(poi => {
             const marker = new this._AdvancedMarkerElement({
@@ -138,16 +147,20 @@ class POIMap {
             this.poiMarkers.push({ marker, poi });
         });
 
-        await this.fitToAllMarkers();
+        this._fitToAllMarkersSync();
     }
 
     async clearPOIMarkers() {
+        this._clearPOIMarkersSync();
+    }
+
+    _clearPOIMarkersSync() {
         this.poiMarkers.forEach(({ marker }) => { marker.map = null; });
         this.poiMarkers = [];
     }
 
     async selectPOI(poiId) {
-        await this._whenReady();
+        if (!this.map) await this._whenReady();
         // Reset all markers to default content
         this.poiMarkers.forEach(({ marker }) => {
             marker.content = this._makeMarkerContent(false);
@@ -157,8 +170,12 @@ class POIMap {
             found.marker.content = this._makeMarkerContent(true);
             this.selectedPOI = poiId;
             this.map.panTo({ lat: found.poi.lat, lng: found.poi.lng });
-            // Match Leaflet behavior: setView always snaps zoom to 17
-            this.map.setZoom(17);
+            // Only setZoom when it would actually change — calling setZoom(n)
+            // when already at zoom n still triggers a redraw that interrupts
+            // panTo's smooth animation.
+            if (this.map.getZoom() !== 17) {
+                this.map.setZoom(17);
+            }
         }
     }
 

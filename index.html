@@ -52,7 +52,15 @@
     </div>
     
     <!-- Config: real values injected at deploy time by GitHub Actions; locally use config.local.js -->
-    <script src="config.js" onerror="this.onerror=null;this.src='config.local.js';"></script>
+    <script src="config.js"></script>
+    <script>
+        // Fallback for local dev: if config.js wasn't found, inject config.local.js.
+        // document.write during initial parsing is synchronous, so APP_CONFIG is set
+        // before later scripts run.
+        if (typeof window.APP_CONFIG === 'undefined') {
+            document.write('<script src="config.local.js"><\/script>');
+        }
+    </script>
     <script src="src/data.js"></script>
     <script src="src/utils.js"></script>
     <script src="src/engine-loader.js"></script>
