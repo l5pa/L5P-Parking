@@ -53,10 +53,63 @@ class POIMap {
         return new Promise(resolve => this._readyResolvers.push(resolve));
     }
 
-    // ---- Stub methods (filled in by subsequent tasks) ----
-    async updateUserLocation(_lat, _lng) {}
-    async fitToAllMarkers() {}
-    async fitBounds(_userLat, _userLng, _pois, _maxDistanceMiles = 3) {}
+    _makeUserLocationContent() {
+        const div = document.createElement('div');
+        div.className = 'user-location-marker';
+        return div;
+    }
+
+    async updateUserLocation(lat, lng) {
+        await this._whenReady();
+        this.userLocation = { lat, lng };
+
+        if (this.userMarker) {
+            this.userMarker.position = { lat, lng };
+        } else {
+            this.userMarker = new this._AdvancedMarkerElement({
+                map: this.map,
+                position: { lat, lng },
+                content: this._makeUserLocationContent(),
+                zIndex: 1000
+            });
+        }
+        this.map.setCenter({ lat, lng });
+        this.map.setZoom(14);
+    }
+
+    async fitToAllMarkers() {
+        await this._whenReady();
+        if (this.poiMarkers.length === 0) return;
+
+        const bounds = new google.maps.LatLngBounds();
+        this.poiMarkers.forEach(({ poi }) => {
+            bounds.extend({ lat: poi.lat, lng: poi.lng });
+        });
+        this.map.fitBounds(bounds, 30); // 30px padding ≈ Leaflet's [30, 30]
+
+        // Cap zoom at 17 to match Leaflet's maxZoom option
+        google.maps.event.addListenerOnce(this.map, 'idle', () => {
+            if (this.map.getZoom() > 17) this.map.setZoom(17);
+        });
+    }
+
+    async fitBounds(userLat, userLng, pois, maxDistanceMiles = 3) {
+        await this._whenReady();
+        if (!pois || pois.length === 0) return;
+
+        // poi.distance is in km; milesToKm is provided by utils.js (loaded earlier)
+        const nearby = pois.filter(poi => poi.distance <= milesToKm(maxDistanceMiles));
+        if (nearby.length === 0) return;
+
+        const bounds = new google.maps.LatLngBounds();
+        bounds.extend({ lat: userLat, lng: userLng });
+        nearby.forEach(poi => bounds.extend({ lat: poi.lat, lng: poi.lng }));
+        this.map.fitBounds(bounds, 20);
+
+        google.maps.event.addListenerOnce(this.map, 'idle', () => {
+            if (this.map.getZoom() > 16) this.map.setZoom(16);
+        });
+    }
 
     _makeMarkerContent(selected) {
         const div = document.createElement('div');
