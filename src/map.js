@@ -243,3 +243,5 @@ class POIMap {
         };
     }
 }
+
+window.POIMap = POIMap;

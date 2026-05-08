@@ -9,7 +9,6 @@
     <title>Little 5 Points Parking Map</title>
     
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="src/styles.css">
     
@@ -52,10 +51,11 @@
         </main>
     </div>
     
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Config: real values injected at deploy time by GitHub Actions; locally use config.local.js -->
+    <script src="config.js" onerror="this.onerror=null;this.src='config.local.js';"></script>
     <script src="src/data.js"></script>
     <script src="src/utils.js"></script>
-    <script src="src/map.js"></script>
+    <script src="src/engine-loader.js"></script>
     <script src="src/app.js"></script>
 </body>
 </html>
