@@ -2,7 +2,7 @@
   "name": "Little 5 Points Parking Map",
   "short_name": "L5P Parking",
   "description": "Find parking in Little 5 Points, Atlanta",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#FFD200",
