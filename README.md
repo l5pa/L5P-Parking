@@ -3,7 +3,7 @@
 A mobile-first Progressive Web App for finding parking in Atlanta's Little Five Points neighborhood.
 
 ## Live Site
-**[https://naoyawada.github.io/L5P-Parking/](https://naoyawada.github.io/L5P-Parking/)**
+**[https://l5pa.github.io/L5P-Parking/](https://l5pa.github.io/L5P-Parking/)**
 
 ## Features
 
@@ -49,7 +49,7 @@ This is a static site — no build step. To run locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/naoyawada/L5P-Parking.git
+   git clone https://github.com/l5pa/L5P-Parking.git
    cd L5P-Parking
    ```
 
