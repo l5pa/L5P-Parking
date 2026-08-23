@@ -1,4 +1,8 @@
 // Main application logic
+
+// Space counts are hidden for now — flip to true to show "N spaces" on cards again
+const SHOW_SPACE_COUNTS = false;
+
 class POIApp {
     constructor() {
         this.map = null;
@@ -193,7 +197,7 @@ class POIApp {
             <p class="poi-category">${poi.category}</p>
             ${poi.address ? `<p class="poi-address"><i class="fa-solid fa-fw fa-map-pin"></i>${poi.address}</p>` : ''}
             ${poi.landmark ? `<p class="poi-landmark"><i class="fa-solid fa-fw fa-eye"></i>${poi.landmark}</p>` : ''}
-            ${poi.spaces ? `<p class="poi-spaces"><i class="fa-solid fa-fw fa-car"></i>${poi.spaces} spaces</p>` : ''}
+            ${SHOW_SPACE_COUNTS && poi.spaces ? `<p class="poi-spaces"><i class="fa-solid fa-fw fa-car"></i>${poi.spaces} spaces</p>` : ''}
             ${poi.rates ? `<p class="poi-rates"><i class="fa-solid fa-fw fa-dollar-sign"></i>${poi.rates}</p>` : ''}
             <div class="poi-amenity-icons">${evIcon}${validateIcon}</div>
             <a class="directions-btn" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(poi.address || poi.lat + ',' + poi.lng)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
