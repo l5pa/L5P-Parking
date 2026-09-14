@@ -3,7 +3,7 @@
 A mobile-first Progressive Web App for finding parking in Atlanta's Little Five Points neighborhood.
 
 ## Live Site
-**[https://l5pa.github.io/L5P-Parking/](https://l5pa.github.io/L5P-Parking/)**
+**[https://parking.little5pointsofficial.com/](https://parking.little5pointsofficial.com/)**
 
 ## Features
 
