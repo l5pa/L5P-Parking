@@ -62,7 +62,15 @@ class POIMap {
         
         // Click on map background to deselect
         this.map.on('click', () => {
+            if (this.selectedPOI) {
+                window.dispatchEvent(new CustomEvent('poiMapDeselect'));
+            }
             this.deselectAll();
+        });
+
+        // First user drag → signals the person explored the map
+        this.map.once('dragstart', () => {
+            window.dispatchEvent(new CustomEvent('poiMapDrag'));
         });
 
         // Fix mobile touch scrolling issues

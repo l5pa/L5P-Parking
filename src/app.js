@@ -48,8 +48,13 @@ class POIApp {
         // Display POIs in list (without distances initially)
         this.displayPOIList(pois);
 
-        // Track page load with lot count
-        gtag('event', 'page_load', { lot_count: pois.length });
+        // Track page load with lot count and context
+        const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+        track('page_load', {
+            lot_count: pois.length,
+            map_engine: window.MAP_ENGINE || 'unknown',
+            display_mode: standalone ? 'standalone' : 'browser'
+        });
 
         // Try to get user location automatically
         this.getUserLocation();
@@ -59,14 +64,33 @@ class POIApp {
         // Location button click
         const locationBtn = document.getElementById('locationBtn');
         locationBtn?.addEventListener('click', () => {
+            track('location_button_click');
             this.getUserLocation(true); // Force refresh
         });
         
         // Listen for map POI clicks
         window.addEventListener('poiMapClick', (event) => {
             const poi = getPOIById(event.detail.poiId);
-            gtag('event', 'select_lot', { lot_id: event.detail.poiId, lot_name: poi?.name, source: 'marker' });
+            track('select_lot', { lot_id: event.detail.poiId, lot_name: poi?.name, source: 'marker' });
             this.selectPOIInList(event.detail.poiId);
+        });
+
+        // Tap on empty map cleared a selection
+        window.addEventListener('poiMapDeselect', () => {
+            track('deselect_lot', { source: 'map' });
+        });
+
+        // First time the user pans the map (fires once per page load)
+        window.addEventListener('poiMapDrag', () => {
+            track('map_explore');
+        });
+
+        // PWA install funnel
+        window.addEventListener('beforeinstallprompt', () => {
+            track('pwa_install_prompt');
+        });
+        window.addEventListener('appinstalled', () => {
+            track('pwa_installed');
         });
         
         // Handle visibility change to manage location watching
@@ -91,7 +115,7 @@ class POIApp {
             });
             
             this.userLocation = location;
-            gtag('event', 'location_granted');
+            track('location_granted', { trigger: forceRefresh ? 'button' : 'auto' });
 
             // Update map with user location
             this.map.updateUserLocation(location.lat, location.lng);
@@ -108,7 +132,7 @@ class POIApp {
         } catch (error) {
             console.error('Location error:', error);
             const eventName = error.code === 1 ? 'location_denied' : 'location_error';
-            gtag('event', eventName, { error_code: error.code, error_message: error.message });
+            track(eventName, { error_code: error.code, trigger: forceRefresh ? 'button' : 'auto' });
         } finally {
             hideLoading();
         }
@@ -206,7 +230,7 @@ class POIApp {
         `;
 
         card.querySelector('.directions-btn')?.addEventListener('click', () => {
-            gtag('event', 'get_directions', { lot_id: poi.id, lot_name: poi.name });
+            track('get_directions', { lot_id: poi.id, lot_name: poi.name });
         });
 
         return card;
@@ -214,7 +238,7 @@ class POIApp {
     
     selectPOI(poiId, cardIndex) {
         const poi = getPOIById(poiId);
-        gtag('event', 'select_lot', { lot_id: poiId, lot_name: poi?.name, source: 'card', card_position: cardIndex });
+        track('select_lot', { lot_id: poiId, lot_name: poi?.name, source: 'card', card_position: cardIndex });
 
         // Update visual selection in list
         this.selectPOIInList(poiId);
