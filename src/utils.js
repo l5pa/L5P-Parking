@@ -157,6 +157,13 @@ function showLoading() {
     }
 }
 
+// Send a GA4 event; no-op if gtag is blocked or not loaded
+function track(eventName, params = {}) {
+    if (typeof gtag === 'function') {
+        gtag('event', eventName, params);
+    }
+}
+
 // Hide loading state
 function hideLoading() {
     const loading = document.getElementById('loading');

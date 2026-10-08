@@ -38,7 +38,17 @@ class POIMap {
         });
 
         // Click on empty map → deselect
-        this.map.addListener('click', () => this.deselectAll());
+        this.map.addListener('click', () => {
+            if (this.selectedPOI) {
+                window.dispatchEvent(new CustomEvent('poiMapDeselect'));
+            }
+            this.deselectAll();
+        });
+
+        // First user drag → signals the person explored the map
+        google.maps.event.addListenerOnce(this.map, 'dragstart', () => {
+            window.dispatchEvent(new CustomEvent('poiMapDrag'));
+        });
 
         // Resolve any operations queued before init finished
         this._readyResolvers.forEach(fn => fn());

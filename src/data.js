@@ -148,6 +148,7 @@ async function fetchSheetData() {
         return POINTS_OF_INTEREST;
     } catch (error) {
         console.error('Failed to fetch sheet data:', error);
+        track('data_load_error', { error_message: String(error && error.message).slice(0, 100) });
         // Return whatever we have (could be empty on first load)
         return POINTS_OF_INTEREST;
     }
